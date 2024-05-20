@@ -1267,26 +1267,296 @@ Mediation is not based on regression models but moderation is: Incorrect differe
 Moderation is statistically more valid as you can determine the significance of the moderation effect: Incorrect differentiation.
 
 
+#Opgaven Week 4
+#Opgave A
+#1
+#2
+#3
+#4
+install.packages("car") 
+install.packages("psych") 
+install.packages("haven") 
+
+#Opgave B
+employee <- read.csv("employeeUSA.csv")
+na.omit(employee)
+
+#5 boxplot for salary and job category
+boxplot(employee$salary ~ employee$jobcat, main = "salaris per catergorie", xlab = "categorie", ylab = "salaris")
+
+#6 mean per job category, test if there's a statistical difference with tukey
+aggregate(employee$salary ~ employee$jobcat, FUN = "mean")
+gemjob <- aov(employee$salary ~ as.factor(employee$jobcat))
+TukeyHSD(gemjob)
+
+#7 create sample with seed
+ID <- c(1:nrow(employee))
+employee <- cbind(ID, employee)
+
+set.seed(789)
+sample1 <- sample(employee$ID, 200, replace = FALSE)
+
+sampleEmployee <- employee[sample1,]
+
+#7a test difference in salary between genders
+t.test(sampleEmployee$salary ~ sampleEmployee$gender)
+
+#7b put job 2 and 3 together 
+table(employee$jobcat)
+employee$jobcat2 <- ifelse(employee$jobcat == "manager", "Custodial", employee$jobcat)
+table(employee$jobcat2)
+
+table(employee$gender, employee$jobcat2)
+
+#7c chisq test on table from above
+chisq.test(table(employee$gender, employee$jobcat2))
+
+info_chi <- chisq.test(table(employee$jobcat2, employee$gender))
+attributes(info_chi) # alle informatie uit de chiquare test
+info_chi$expected
+
+#8
+#8a mean salary in samples
+set.seed(1234)
+sample1 <- sample(employee$ID, 30, replace = FALSE)
+
+set.seed(5678)
+sample2 <- sample(employee$ID, 30, replace = FALSE)
+
+steekproef1.df <- employee[sample1,]
+steekproef2.df <- employee[sample2,]
+
+steekproef1.df$sample <- 1
+steekproef2.df$sample <- 2
+
+New <- rbind(steekproef1.df,steekproef2.df)
+
+mean(New$salary)
+aggregate(New$salary ~ New$sample, FUN=mean)
+
+#8b t test between salaries in samples
+t.test(New$salary ~ New$sample) 
+
+#Opgave C
+#9 correlation between sales
+MusicSales <- read.table('https://tinyurl.com/y598llbe', header=T, sep=",", dec = ".")
+# Step 2: Calculate the Pearson correlation between 'sales' and the other three variables
+correlation_matrix <- cor(MusicSales, use="complete.obs", method="pearson")
+
+# Extract the correlations involving 'sales'
+sales_correlations <- correlation_matrix["sales", ]
+print(sales_correlations)
+
+#or
+cor.test(MusicSales$adverts,MusicSales$attract)
+
+#10 difference sales in the high- and the low attractinggroup 
+MusicSales$HiAttract <- ifelse(MusicSales$attract > 5, 1,0)
+
+t.test(MusicSales$sales ~ MusicSales$HiAttract)
+
+#11 +12 create samples and check sd and mean
+MusicSales$ID <- 1:200
+
+set.seed(24)
+sample1 <- sample(MusicSales$ID, 30, replace = FALSE)
+
+set.seed(43)
+sample2 <- sample(MusicSales$ID, 30, replace = FALSE)
+
+Music1 <- MusicSales[sample1, ]
+Music2 <- MusicSales[sample2, ]
+
+mean(Music1$airplay)
+sd(Music1$airplay)
+
+mean(Music2$airplay)
+sd(Music2$airplay)
+
+#13 t test to check if there's a difference sales in the high- and the low attractinggroup 
+Music <- rbind(Music1,Music2)
+
+t.test(Music$sales ~ Music$HiAttract)
+
+#14 same conclusion in (10) and (13)? 
+#No! sample has no significant difference, the big data set does.
+
+#Opgave D
+#15
+Hobbit <- haven::read_sav("Hobbit.sav")
+ANOV <- aov(Hobbit$totspent ~ as.factor(Hobbit$income))
+TukeyHSD(ANOV)
+
+#16 which two incomeclasses differ the most
+#1 and 7
+
+#17 Name all incomeclasses which don't differ from each other
+#No difference (TukeyHSD outcome p > .05) for 1-2, 4-3, 5-6, 6-7
+
+#Opgaven Week 5
+#opgave A
+#1abcd
+RstudioHelp <- read.csv("https://tinyurl.com/rstudiohelp", sep = ";")
+
+Movies <- c("The Avengers","Iron Man","The Dark Knight Rises","The Hunger Games","Man of Steel","Skyfall")
+
+Genre <- c("Action", "Action", "Action", "Adventure", "Action", "Action")
+
+Aantalbioscopen <- c(4349, 4253, 4404, 4163, 4207, 3505)
+
+Omzetinmiljoenen <- c(207, 174, 160, 158, 116, 88)
+
+Bios.df <- data.frame(Movies, Genre, Aantalbioscopen, Omzetinmiljoenen)
+
+Bios.df$omzet.per.bioscoop <- Bios.df$Omzetinmiljoenen/Bios.df$Aantalbioscopen
+
+mean(Bios.df[Bios.df$Genre == "Action",]$omzet.per.bioscoop)
+
+#Opgave 2
+install.packages("psych")
+install.packages("haven")
+#1 Bereken de Cronbach’s alpha van de 3 multi-item scales (WScognit, WSaffect, en PIntent)
+ecommerce <- haven::read_sav("Studenten_BK_IBA_Ecommerce.sav")
+psych::alpha(ecommerce[,c("Q16_2_1", "Q16_2_2", "Q16_2_3", "Q16_2_4")])
+
+psych::alpha(ecommerce[,c("Q17_2_1","Q17_2_2","Q17_2_3","Q17_2_4")])
+
+psych::alpha(ecommerce[,c("Q22_2_1","Q22_2_2","Q22_2_3")])
+
+#2
+#Allemaal betrouwbaar, hoge raw_alpha
+
+#3 Bereken de schaalscores voor WScognit, WSaffect, en PIntent en voeg deze nieuwe variabelen toe
+#aan je data frame, noem deze variabelen WScognit, WSaffect, en PIntent.
+ecommerce$WScognit <- rowMeans(ecommerce[ ,c("Q16_2_1","Q16_2_2","Q16_2_3","Q16_2_4")])
+ecommerce$WSaffect <- rowMeans(ecommerce[ ,c("Q17_2_1","Q17_2_2","Q17_2_3","Q17_2_4")])
+ecommerce$PIntent <- rowMeans(ecommerce[ ,c("Q22_2_1","Q22_2_2","Q22_2_3")])
+
+table(ecommerce$Q31)
+table(ecommerce$Q32)
+table(ecommerce$Q34)
+
+#Maak van de variabelen Q31, Q32 en Q34 variabelen met twee categorieën (0 en 1) en
+#noem deze Female, StudieBK, en Parents
+
+ecommerce$Female <- ifelse(ecommerce$Q31 == 2, 1, 0)
+ecommerce$StudieBK <- ifelse(ecommerce$Q32 == 1, 1, 0)
+ecommerce$Parents <- ifelse(ecommerce$Q34 == 1, 1, 0)
+
+table(ecommerce$Female)
+table(ecommerce$StudieBK)
+table(ecommerce$Parents)
+
+psych::describe(ecommerce)
+
+#4 Bereken wat de gemiddelden zijn van de variabele PIntent voor mannen en voor vrouwen. Doe
+#daarna een t-test om na te gaan of mannen en vrouwen van elkaar verschillen in PIntent.
+aggregate(ecommerce$PIntent ~ ecommerce$Female, FUN = mean)
+t.test(ecommerce$PIntent ~ ecommerce$Female)
+
+#5 Gebruik de lm()functie om een regressie model te berekenen, waarin je PIntent verklaart
+#a.d.h.v. je onafhankelijke variabele WSaffect, daarna summary() en interpreteer.
+Reg1 <- lm(PIntent ~ WSaffect, data=ecommerce)
+summary(Reg1)
 
 
+#6 (a) Maak een scatterplot van de relatie tussen PIntent en WSaffect. Zorg ervoor dat de
+#afhankelijke variabele (PIntent) op de Y-as staat en de onafhankelijke variabele op de X-as.
+#(b) Gebruik vervolgens de gemaakte scatterplot en voeg de regressielijn toe aan deze scatterplot met de functie abline()
+plot(jitter(ecommerce$PIntent), jitter(ecommerce$WSaffect),
+     xlab="Website Affect",
+     ylab="Purchase intention",
+     main="Buying at Chines Webshops")
+abline(Reg1)
 
+#7 Gebruik de functie plot()om de geschiktheid van het model uit (5) te testen
+par(mfrow=c(2,2))
+plot(Reg1) 
 
+#8 Bereken een multiple regressie model, waarin je PIntent verklaart door WScognit en
+#WSaffect. Vraag een samenvatting van de modelresultaten op met de functie summary()
+Reg2 <- lm(PIntent ~ WScognit + WSaffect, data=ecommerce)
+summary(Reg2)
+ 
+anova(Reg1, Reg2)  # het tweede model verklaart significant meer variantie
 
+#9 Voer nog regressie-analyse uit waarin je PIntent verklaart door WScognit en WSaffecten
+#door de 3 achtergrondvariabelen Female, StudieBK, en Parents
+Reg3 <- lm(PIntent ~ WScognit + WSaffect + Female + StudieBK + Parents, data = ecommerce)
+summary(Reg3)
 
+#10 Hoeveel variantie van PIntent wordt verklaard door alleen WScognit en WSaffect? Dragen
+#de achtergrondvariabelen (vraag 9) statistisch significant bij aan de koopintentie (PIntent)? Fit
+#het derde model beter dan het tweede zonder de achtergrondvariabelen?
+anova(Reg1, Reg2, Reg3)
+#Het tweede model is beter dan het eerste (p-value < .001) en WScognit verklaart extra variantie. 
+#Model 3 levert geen verbetering op. De demograofische gegevens verklaren geen extra variantie ( p = 0.8521) in PIntent (koopintentie).
 
+#11
+par(mfrow=c(2,2))
+plot(Reg3) 
 
+#12
+car::vif(Reg3)
+#De resultaten geven aan dat er geen sprake is van multicollineariteit. Alle VIF zijn kleiner dan 10 (norm Ghauri).
 
+#Opgave 3
+#1
+Festival <- haven::read_sav("DownloadFestival.sav")
+psych::describe(Festival)
 
+#2
+table(Festival$sex)
+315/810
 
+#3 Bepaal of er een statistisch significant verschil bestaat tussen mannen en vrouwen qua hygiëne op dag 1 van het festival.
+t.test(Festival$day1 ~ Festival$sex)
 
+#4 Trek twee verschillende willekeurige steekproeven (zonder terugleggen) van 100 observaties uit
+#het data frame Festival en sla deze steekproeven op onder de namen steekproef1.df en
+#steekproef2.df (gebruik als seeds 1234 en 5678). Voeg aan beide steekproeven een nieuwe
+#kolomvector toe met de naam sample, waarin je het nummer van de steekproef zet. Voeg de
+#steekproeven vervolgens samen in een nieuwe data frame. Gebruik hierna een t-test om te testen
+#of er een significant verschil is in hygiëne op dag 1 tussen de twee steekproeven.
+Festival$ID <- 1:810
 
+set.seed(1234)
+sam1 <- sample(Festival$ID, 100)
 
+steekproef1.df <- Festival[sam1,]
 
+set.seed(5678)
+sam2 <- sample(Festival$ID, 100)
 
+steekproef2.df <- Festival[sam2,]
 
+steekproef1.df$sample <- 1
+steekproef2.df$sample <- 2
 
+Steekproeven <- rbind(steekproef1.df, steekproef2.df)
 
+t.test(Steekproeven$day1 ~ Steekproeven$sample)
 
+#5 Selecteer alleen de mannen uit de dataframe en noem deze dataframe Mannen.df. Trek
+#vervolgens twee willekeurige steekproeven van 25 uit deze data (gebruik als seeds 233 en 765).
+#Voeg aan beide steekproeven een nieuwe kolomvector toe met de naam sampleMan, waarin je
+#het nummer van de steekproef zet. Voeg de steekproeven vervolgens samen in een nieuwe data
+#frame. Gebruik hierna een t-test om te testen of er een significant verschil is in hygiëne op dag 1
+#tussen de twee steekproeven.
+Mannen <- Festival[Festival$sex == 0,]
+Mannen$ID <- 1:315
 
+set.seed(233)
+sam1 <- sample(Mannen$ID, 25)
+steekproef1.df <- Mannen[sam1,]
 
+set.seed(765)
+sam2 <- sample(Mannen$ID, 25)
+steekproef2.df <- Mannen[sam2,]
 
+steekproef1.df$sampleMan <- 1
+steekproef2.df$sampleMan <- 2
+
+Steekproeven <- rbind(steekproef1.df, steekproef2.df)
+
+t.test(Steekproeven$day1 ~ Steekproeven$sampleMan)
