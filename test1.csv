@@ -809,3 +809,484 @@ question4d <- function() {
 }
 question4d()
 
+EXAM 1
+EXAM 1
+EXAM 1
+EXAM 1
+EXAM 1
+Question 1: One-Sample t-test
+To perform a one-sample t-test comparing the mobility of permanent employees to the median mobility score of flex employees (1.942):
+
+t.test(df$mobility[df$employstatus == "permanent"], mu = 1.942, alternative = "greater")
+
+
+Question 2: Chi-Square Test
+To perform a chi-square test comparing satisfaction levels across employment status:
+
+chi1 <- chisq.test(table(df$satisfaction, df$employstatus))
+print(chi1)
+print(chi1$expected)
+print(chi1$observed)
+
+
+Question 3: ANOVA
+To perform an ANOVA to test if mobility differs across satisfaction levels:
+
+aov1 <- aov(mobility ~ factor(satisfaction), data = df)
+summary(aov1)
+TukeyHSD(aov1)
+Question 4: Correlation Matrix
+To calculate the correlation matrix for the specified variables:
+
+
+vars <- c("ppltrst", "pplfair", "pplhlp", "freehms", "hmsfmlsh", "hmsacld")
+cor_matrix <- round(cor(df[vars], use = "pairwise.complete.obs"), 3)
+print(cor_matrix)
+
+
+Question 5: Two-Sample t-test with Levene's Test
+To compare the mean staff mobility scores between permanent and flex staff, using an independent-samples t-test:
+
+# Install and load the car package for Levene's Test
+if (!require(car)) install.packages("car", dependencies = TRUE)
+library(car)
+
+# Perform Levene's Test for equality of variances
+leveneTest(mobility ~ employstatus, data = df)
+
+# Perform the two-sample t-test
+t_test_result <- t.test(mobility ~ employstatus, data = df)
+print(t_test_result)
+Screenshot Insights:
+One-Sample t-test Result Interpretation:
+
+Correct interpretation: "Permanent staff do not have a higher mobility than the median mobility of flex staff."
+Chi-Square Test Result Interpretation:
+
+Correct interpretation: "More flex employees are very satisfied than you would expect given 
+𝐻
+0
+H 
+0
+​
+ ."
+ANOVA Result Interpretation:
+
+Correct interpretation: "Both A and B are true."
+Correlation Matrix Validity Discussion:
+
+This part involves discussing the convergent and discriminant validity based on the provided correlation matrix. This is more of a theoretical interpretation rather than an R command output.
+Two-Sample t-test Assumption Check:
+
+The assumption tested: Equal variances.
+Results do not show a violation of the assumption.
+Correct t-value: 0.5734.
+Degrees of freedom: 998.
+Conclusion: Flex staff does not differ significantly from permanent staff in mobility.
+
+
+EXAM 2
+EXAM 2
+EXAM 2
+EXAM 2 
+EXAM 2
+1. The correct model fitting the idea that the relationship between satisfaction and loyalty depends on the nation:
+Correct Answer: The model with the following flow:
+
+Satisfaction --> Loyalty --> Country (shown in the third diagram)
+2. When would you advise them to do a random sampling approach, a systematic approach, or a stratified approach? Explain each.
+Random Sampling: Use when you need an unbiased representation of the entire population.
+Systematic Sampling: Use when the list is ordered and you want to ensure even coverage across the list. Example: selecting every 7th person.
+Stratified Sampling: Use when you need to ensure representation from different subgroups (e.g., departments, contract types).
+3. Cluster sampling in this situation (surveying people who live close to one another) reduces costs and reduces precision.
+Correct Answer: Cluster sampling reduces costs and reduces precision.
+
+4. Satisfaction is measured using an 11-point scale. Would you consider this to be a ratio, interval, or ordinal level?
+Correct Answer: Ordinal because you cannot assume equal intervals.
+
+5. Hypothesis Testing
+Assumption before performing the t-test:
+Correct Answer: Equal variances
+
+Violation of assumption:
+Correct Answer: No
+
+t-value of the appropriate t-test:
+Correct Answer: 0.5734
+
+Degrees of freedom of the appropriate t-test:
+Correct Answer: 998
+
+Does the flex staff differ significantly from permanent staff in mobility?
+Correct Answer: No
+
+6. One-sample t-test to compare mobility:
+Conclusion based on output:
+Correct Answer: Permanent staff have a higher mobility than the median mobility of flex staff.
+
+7. Chi-squared test to determine if the chance of being promoted differs across satisfaction levels:
+Correct Answer: A is true, B is false (The chi-square test is reliable, More flex employees are very satisfied than you would expect given H₀).
+
+8. Correlation Matrix and Validity
+Interpreting the given correlation matrix for convergent and discriminant validity of the multi-item scale measuring the attitude towards gay rights, and in particular item hmsacld:
+For this task, it involves a more nuanced interpretation, and typically you'd analyze whether items intended to measure the same construct are highly correlated (convergent validity) and whether items measuring different constructs have low correlations (discriminant validity).
+
+Given the correlation matrix, the correct interpretation would involve ensuring:
+
+Convergent Validity: High correlations among items intended to measure the same construct (e.g., hmsacld and hmsfmlsh).
+Discriminant Validity: Low correlations among items intended to measure different constructs (e.g., hmsacld and ppltrst).
+The provided matrix suggests:
+
+High correlation between hmsfmlsh and hmsacld (suggesting good convergent validity for attitudes towards gay rights).
+Lower correlations between hmsacld and social trust items like ppltrst, pplfair, pplhlp (suggesting good discriminant validity).
+
+NEXT PART
+NEXT PART
+
+Image 1 (15.1.JPG)
+Question:
+The researcher inspects the regression assumptions, normality of residuals, homoscedasticity, and independence of errors. Discuss whether the model violates these assumptions, and mention which plot shows you to inspect each assumption and why the plot shows a violation (or not).
+
+Answer:
+
+Normality: Looking at the Normal Q-Q plot, you can see that the residuals follow the theoretical line. So, normality of residuals is not violated.
+Homoscedasticity: The Residuals vs Fitted plot shows a funnel shape, indicating heteroscedasticity. So, homoscedasticity is violated.
+Independence: The Residuals vs Leverage plot does not show any particular pattern that indicates violations of independence.
+
+
+Image 2 (15.2.JPG)
+Question:
+Finally, the company wanted to know whether the chance of being promoted (mobility) differs across satisfaction levels. Satisfaction is measured at a 6-point scale, with 1 very satisfied, and 6 very unsatisfied. The researcher used satisfaction to create 6 groups, one for each point on the measurement scale. What can you conclude about the ANOVA based on the output?
+
+Answer:
+A. Employees who are very satisfied score higher than all other employees on mobility.
+
+Explanation of Other Options:
+
+B. H1 cannot be accepted as mean of one group differs to overall mean: Incorrect interpretation; means differ significantly.
+
+
+Image 3 (15.3.JPG)
+Question:
+A researcher is interested in measuring social trust and explores various multi-item scales to do this. What type of scale would you be interested in, and why?
+
+Answer:
+Reflective scale since the items are manifestations of the construct.
+
+Explanation of Other Options:
+
+Formative scale to assess content and criterion validity: Incorrect; social trust is a reflective construct.
+Reflective scale to assess content and criterion validity: Misinterprets the scale type and its application.
+Formative scale since the items are manifestations of the construct: Incorrect; social trust is reflective.
+
+
+Image 4 (16.1.JPG)
+Question:
+Discuss the convergent and discriminant validity of the multi-item scale measuring the attitude towards gay rights, and in particular item hmsacld.
+
+Answer:
+To assess the convergent and discriminant validity, we look at the correlation matrix. High correlations between items within the same construct indicate convergent validity, while low correlations with items measuring different constructs indicate discriminant validity. The item hmsacld shows discriminant validity if it correlates higher with other gay rights items than with social trust items.
+
+
+Image 5 (16.2.JPG)
+Question:
+To assess the reliability, the researcher has multiple options to consider. Which of the ones below uses the correlation matrix of all items?
+
+Answer:
+Internal consistency.
+
+Explanation of Other Options:
+
+Split half: Divides the test into two halves and compares results.
+Alternative forms: Uses different forms of the same test.
+Test-retest: Compares test results over time.
+
+
+Image 6 (17.JPG)
+Question:
+For the multi-item scale on gay rights, the researcher recodes the item hmsacld to calculate Cronbach's alpha. Was it necessary to recode?
+
+Answer:
+Yes, the Cronbach’s alpha is affected by recoding.
+
+Explanation of Other Options:
+
+No, Cronbach's alpha is based on original variances and covariances: Incorrect; coding affects item correlation.
+No, Cronbach’s alpha is not affected by recoding: Incorrect; it impacts internal consistency.
+Yes, only correct when recoding on all items: Incorrect; necessary for consistent scaling.
+
+
+Image 7 (18.1.JPG)
+Question:
+What is the type of measurement scale of these two multi-item scales?
+
+Answer:
+Gay rights is ordinal, social trust is interval.
+
+Explanation of Other Options:
+
+Both are ratio: Incorrect; scales don’t have a true zero.
+Both are interval: Incorrect; gay rights scale is ordinal.
+Social trust is ordinal, gay rights is interval: Incorrect; reversed.
+
+
+Image 8 (18.2.JPG)
+Question:
+Which variable influences social trust most? Assume a 95% confidence interval.
+
+Answer:
+Health affects social trust more than twice as much.
+
+Explanation of Other Options:
+
+Cannot tell based on output: Incorrect; regression coefficients provide information.
+Health affects social trust less than twice: Incorrect; coefficient comparison shows otherwise.
+Negative and positive effects not comparable: Incorrect; strength can be compared.
+
+
+Image 9 (19.1.JPG)
+Question:
+On which day are they most likely to suffer from decreases in sales in the first year? Take into account both the main effect and interaction effect.
+
+Answer:
+The intercept shows the average sales across non-holidays.
+
+Explanation of Other Options:
+
+Average sales across all holidays: Incorrect; doesn’t account for specific effects.
+Intercept cannot be interpreted: Incorrect; it represents base level.
+Average sales across all days: Incorrect; not specific enough.
+
+
+Image 10 (19.2.JPG)
+Question:
+How would you interpret the intercept in the output below? Assume a 95% confidence interval.
+
+Answer:
+The intercept shows the average sales across non-holidays.
+
+Explanation of Other Options:
+
+Average sales across all holidays: Incorrect; it represents the baseline without holiday effects.
+Intercept cannot be interpreted: Incorrect; it represents a specific value.
+Average sales across all days: Incorrect; it’s about non-holiday baseline.
+These responses provide both the correct answers and brief explanations of the other possible answers based on the given images.
+
+Question 8:
+Q: What can you conclude about the ANOVA based on the output? Which of the following statement is true?
+
+A: Employees who are very satisfied score higher than all other employees on mobility.
+
+Explanation of Other Options:
+
+B: H1 cannot be accepted as mean of one group differs to overall mean - Incorrect, as H1 is accepted based on the significant F-value.
+
+
+Question 9:
+Q: A researcher is interested in measuring social trust, and explores various multi-item scales to do this. What type of scale would you be interested in, and why?
+
+A: Formative scale since the items are manifestations of the construct.
+
+Explanation of Other Options:
+
+Reflective scale to assess content and criterion validity - Incorrect, formative scales are used to assess constructs formed by the combination of items.
+Reflective scale since the items are manifestations of the construct - Incorrect, as the correct statement for formative scales is given.
+Formative scale to assess content and criterion validity - Incorrect, as this option matches the correct answer's context.
+
+
+Question 10:
+Q: Discuss the convergent and discriminant validity of the multi-item scale measuring the attitude towards gay rights, and in particular item hmsacld.
+
+A: Items like ppltrst and pplfair show discriminant validity while items like freehms and hmsacld show convergent validity.
+
+Explanation of Other Options:
+
+Items showing high correlation only - Incorrect, as both convergent and discriminant validity must be considered.
+Question 11:
+Q: To assess the reliability, the researcher has multiple options to consider. Which of the ones below uses the correlation matrix of all items?
+
+A: Internal consistency.
+
+Explanation of Other Options:
+
+Split half - Incorrect, as it divides the test into two halves.
+Alternative forms - Incorrect, as it compares different versions of the test.
+Test-retest - Incorrect, as it measures consistency over time.
+
+
+Question 12:
+Q: For the multi-item scale on gay rights, the researcher recodes the item hmsacld in order to calculate the Cronbach’s alpha. Was it necessary to recode?
+
+A: Yes, the Cronbach’s alpha is affected by recoding.
+
+Explanation of Other Options:
+
+No, the Cronbach’s alpha is based on the original variances and covariances - Incorrect, recoding can affect the internal consistency measurement.
+No, the Cronbach’s alpha is not affected by recoding - Incorrect, as it can change the internal consistency.
+Yes, the Cronbach’s alpha is only correct when you perform recoding on all items - Incorrect, as individual recoding can affect the result.
+
+
+Question 13:
+Q: What is type of measurement scale of these two multi-item scales?
+
+A: Gay rights is ordinal, social trust is interval.
+
+Explanation of Other Options:
+
+Both are ratio - Incorrect, as ratio scales require a true zero point.
+Both are interval - Incorrect, as ordinal scales only show order without precise differences.
+Social trust is ordinal, gay rights is interval - Incorrect, as the nature of the constructs are reversed.
+
+
+Question 14:
+Q: Which variable influences social trust most? Assume a 95% confidence interval.
+
+A: Health affects social trust more than twice as much.
+
+Explanation of Other Options:
+
+You cannot really tell based on the output provided - Incorrect, as statistical significance is evident.
+Health affects social trust less than twice as much - Incorrect, based on the coefficients.
+A negative and positive effect cannot be compared in terms of strength - Incorrect, as the magnitude of the coefficients can be compared.
+
+
+Question 25/25:
+Q: Discuss whether the model she estimated violates these assumptions, and mention which plot shows you use to inspect each assumption and why the plot shows a violation (or not).
+
+A: The Normal Q-Q plot indicates that residuals are normally distributed.
+
+Explanation of Other Options:
+
+Residuals vs Fitted indicates a non-linear relationship - Incorrect, as no clear pattern should be visible.
+Scale-Location indicates non-constant variance - Incorrect, as it should show random scatter.
+Residuals vs Leverage indicates influential outliers - Incorrect, as influential points should be checked with Cook’s distance.
+
+
+NEXT PART 
+NEXT PART
+
+
+Question 15/25
+Question: Assessing the assumptions of a model, which statement is true about the normality of residuals?
+Answer: Looking at the Normal Q-Q plot, you can see that the residuals follow the theoretical line. So normality of residuals is not violated.
+
+Other Possible Answers:
+
+Homoscedasticity: Indicates whether the residuals have constant variance.
+Independence: Refers to the residuals being independent from each other.
+
+
+Question 16/25
+Question: How would you interpret the effect of subjective income dummy? Assume a 95% confidence interval.
+Answer: A comfortable feeling about income relates to higher trust in people for those who are supportive of gay rights.
+
+Other Possible Answers:
+
+A comfortable feeling about income relates to higher trust in people: A general statement about income and trust.
+A comfortable feeling about income relates to higher trust in people for those who show an average support of gay rights: Relates to average support.
+Given all attitudes towards gay rights, a comfortable feeling about income relates to a higher trust in people: Considers all attitudes towards gay rights.
+
+
+Question 17/25
+Question: Multicollinearity can lead to serious issues in multiple regression models. Which of the statements is false?
+Answer: Standard errors are decreased because the independent effects of each cannot be determined.
+
+Other Possible Answers:
+
+Multicollinearity implies that variables move together, which makes it difficult to estimate the effect of each variable independent of the other: True statement.
+Multicollinearity might lead to insignificant effects even though the variables relate highly to the dependent variable: True statement.
+Two variables that strongly move together and impact the dependent variable can cause multicollinearity: True statement.
+
+
+Question 18/25
+Question: What is true about the decrease or increase over time of sales during King’s Day? Assume a 95% confidence interval.
+Answer: On King’s Day sales decrease somewhat, but over time this decrease is strong.
+
+Other Possible Answers:
+
+The sales increase strong over time, and the decrease for King’s Day is weak: Incorrect interpretation.
+There is no decrease in sales on King’s Day as the overall trend is strong and positive: Incorrect interpretation.
+On King’s Day sales decrease strongly, but over time this decrease is weak: Incorrect interpretation.
+
+
+Question 19/25
+Question: How would you interpret the intercept in the output below? Assume a 95% confidence interval.
+Answer: The intercept shows the average sales across non-holidays.
+
+Other Possible Answers:
+
+The intercept shows the average sales across all holidays: Incorrect interpretation.
+The intercept cannot be interpreted in this output: Incorrect interpretation.
+The intercept shows the average sales across all days: Incorrect interpretation.
+
+
+Question 20/25
+Question: On which day are they most likely to suffer from decreases in sales in the first year?
+Answer: Liberation day shows a larger decrease than King’s Day.
+
+Other Possible Answers:
+
+King’s Day shows a larger decrease than Liberation Day: Incorrect comparison.
+Easter Monday shows a larger decrease than King’s Day: Incorrect comparison.
+Easter Monday shows a larger decrease than Liberation Day: Incorrect comparison.
+
+
+Question 21/25
+Question: Perform a log transformation and run the moderated regression. Report the intercept and predict the log Sales.
+Answer: Intercept: -2.100, Predicted log Sales: 0.712, Transform the predicted value to the original scale: 2.037
+
+Question 22/25
+Question: What is the indirect effect of enjoyment on # books read? Compute the number and select the right answer.
+Answer: -0.037
+
+Other Possible Answers:
+
+0.077: Incorrect calculation.
+-0.133: Incorrect calculation.
+-0.564: Incorrect calculation.
+
+Question 23/25
+Question: The indirect effect is not significant. Given the output below, what does this tell you?
+Answer: There is no mediation.
+
+Other Possible Answers:
+
+There is full mediation: Incorrect interpretation.
+There is a partial mediation: Incorrect interpretation.
+I cannot tell whether there is no, partial, or full mediation: Incorrect interpretation.
+
+
+Question 24/25
+Question: What is the difference between a moderation and mediation model?
+Answer: Moderation answers the question when, while mediation answers the question why an effect between X and Y might differ based on Z.
+
+Other Possible Answers:
+
+Moderation requires multiple regressions while mediation requires one: Incorrect differentiation.
+Mediation is not based on regression models but moderation is: Incorrect differentiation.
+Moderation is statistically more valid as you can determine the significance of the moderation effect: Incorrect differentiation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
