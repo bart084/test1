@@ -1,0 +1,7 @@
+# read datafile, header and sep are necessary
+"Data<-read.table(""jobsatisfaction.csv"", header=TRUE, sep="","")"
+nrow(Data) # calculates the number of rows
+ncol(Data) # calculates the number of columns
+colnames(Data) # gives the names of the columns
+typeof(Data) # presents the type of object
+str(Data) # shows what is stored in a object
