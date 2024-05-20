@@ -1,7 +1,91 @@
+Mathematical operations
+X == Y # X is equal to Y
+X != Y # X is not equal to Y
+X >= Y # X is greater or equal than Y
+X <= Y # X is smaller or equal than Y
+X > Y # X is greater than Y
+X < Y # X is smaller than Y
+X & Y # X and Y
+X|Y # X or Y
+Vector != Y # not Y
+#
+Inspect objects
 # read datafile, header and sep are necessary
-Data<-read.table(""jobsatisfaction.csv"", header=TRUE, sep="","")
+Data<-read.table("jobsatisfaction.csv", header=TRUE, sep=",")
 nrow(Data) # calculates the number of rows
 ncol(Data) # calculates the number of columns
 colnames(Data) # gives the names of the columns
 typeof(Data) # presents the type of object
 str(Data) # shows what is stored in a object
+#
+Descriptives
+sqrt(Vector) # square root
+mean(Vector) # the mean
+sum(Vector) # the sum
+var(Vector) # the variance
+sd(Vector) # the standard deviation
+exp(Vector) # exponent
+log(Vector) # log (usually with +0.001)
+#
+Visualize data
+par(mfrow=c(3,2), mar=c(2,2,2,2)+0.1)
+# barplot: nominal or ordinal data
+barplot(table(Data$satisfaction),main="Barplot") # one variable
+# stacked barplot for two variables:
+barplot(table(Data$team, Data$satisfaction),main="Stacked Barplot")
+barplot(table(Data$team, Data$satisfaction), beside=T,main="Stacked Barplot")
+# histogram & boxplot & scatterplot: interval or ratio data
+boxplot(Data$satisfaction, Data$team,main="Boxplot") # boxplot
+hist(Data$age,main="Histogram") # histogram
+plot(Data$age, Data$mobility,main="Scatterplot") # scatter: first x-axis, then y-axis!
+#
+Inspect data
+summary(Data) # describes the min, max, median, and mean value of an object
+summary(Data$mobility) # interval/ratio variable
+rowMeans(Data) # calculate means per row (use only if multi-item scales)
+colMeans(Data) # calculate means per column
+table(Data$satisfaction) # the frequency table for nominal/ordinal variable
+tapply(Data$mobility, Data$team, mean, na.rm=T) # get mean for each group
+tapply(Data$mobility, Data$team, sd, na.rm=T) # also works for standard deviation
+tapply(Data$mobility, list(Data$team, Data$satisfaction), mean, na.rm=T)
+#
+Manipulate data
+# recode interval/ratio variables, only shown for one category
+Data$teamR <- 1+Data$team # adds a number to all categories
+Data$ageR <- ifelse(Data$age > 35 & Data$age < 45, 3, Data$age) # interval to (multi)nominal
+factor(Data$satisfaction) # interval to multi-nomial
+sort(Data$age) # sorts vectors according to number (increasing) or character (alphabetical order)
+names(Data) # names of dataframe, matrix or vector
+colnames(Data) # column names
+rownames(Data) # rownames (if applicable)
+scale(Data$age) # standardizes variable
+Dealing with missing values
+is.na(Data$satisfaction) # returns TRUE when the object is missing (Not Available)
+complete.cases(Data) # uses only the cases that are complete
+na.omit(Data) # removes any observation from data that has missings on one variable
+Data[complete.cases(Data$satisfaction),] # integrate indexing with complete.cases
+Data[!is.na(Data$satisfaction),] # is the same as line before
+mean(Data$mobility, na.rm=TRUE) # subcommand in many functions to remove the missings
+#
+Analyze data
+library(car)
+chisq.test(table(Data$satisfaction, Data$team)) # returns the X2 value
+leveneTest(Data$mobility~factor(Data$team)) # levene's test, needs car package
+t.test(mobility~team, Data) # Welsh t-test
+t.test(mobility~team, Data, var.equal=T) # t-test
+aov(mobility~satisfaction, Data) # anova
+aov1<-aov(mobility~factor(satisfaction), Data) # anova, if group numeric use factor()
+aov1$coefficients # inspect mean differences
+TukeyHSD(aov1) # tukey HSD
+cor(Data[,c("satisfaction","mobility")]) # correlation
+# missing values: use="pairwise.complete.obs" for pairwise
+# use="complete.obs" for listwise
+library(psych)
+psych::alpha(Data[,c("satisfaction","mobility")]) # cronbach's alpha
+lm(satisfaction~mobility, Data)# linear model with continuous independent variable
+fit<-lm(satisfaction~mobility, Data)
+summary(fit) # show nicer output
+fit$residuals # get errors
+fit$coefficients # get coefficients
+par(mfrow=c(2,2)) #makes sure plots are in grid, you dont have to know this
+plot(fit) # inspect assumptions
