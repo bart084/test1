@@ -89,3 +89,723 @@ fit$residuals # get errors
 fit$coefficients # get coefficients
 par(mfrow=c(2,2)) #makes sure plots are in grid, you dont have to know this
 plot(fit) # inspect assumptions
+
+Week 1 
+Week 1 
+Week 1 
+Week 1 
+1. Business Research
+1a. Precision and Confidence
+# Load necessary library
+library(openxlsx)
+
+# Define the estimates and actual effect
+estimates <- data.frame(
+  Estimate = c(6, 7.5, 9, 9.5),
+  Lower = c(3, 3.5, 4, 6),
+  Upper = c(9, 11.5, 14, 13)
+)
+actual_effect <- 8
+
+# Calculate precision, accuracy, and confidence
+estimates$Width <- estimates$Upper - estimates$Lower
+estimates$Accuracy <- abs(estimates$Estimate - actual_effect)
+estimates$Confidence <- estimates$Lower <= actual_effect & estimates$Upper >= actual_effect
+
+# Identify the least precise
+least_precise <- estimates[which.max(estimates$Width), ]
+# Identify the highest confidence
+highest_confidence <- estimates[estimates$Confidence == TRUE, ]
+# Identify the most accurate
+most_accurate <- estimates[which.min(estimates$Accuracy), ]
+
+# Print the results
+least_precise
+highest_confidence
+most_accurate
+1b. Hallmarks of Quality Business Research
+# Hallmarks of quality business research might include relevance, current relevance, methodological rigor, etc.
+# Since the 1999 report is deemed insignificant, the primary concern could be the relevance or currency of the data.
+quality_concern <- "Relevance or Currency of the data"
+quality_concern
+2. Research Design, Measurement and Questionnaire Design
+2a. Research Question and Hypothesis
+
+# Relevant research question
+research_question <- "Does a higher sociodemographic level of store neighborhood enhance the positive impact of having a sustainable line on the number of shoppers per week?"
+
+# Role of sociodemographics
+role_of_sociodemographics <- "Moderator"
+research_question
+role_of_sociodemographics
+2b. Conceptual Model
+
+# Based on the description, we need to select the appropriate conceptual models from given models in Excel.
+# Assuming we have the models described:
+correct_model_1 <- "Model that controls for store size and assortment"
+correct_model_2 <- "Model that includes sociodemographic level as a moderator"
+correct_model_1
+correct_model_2
+2c. Nature of Research
+
+# Nature of the research proposed by the team member
+nature_of_research <- "Quasi-experimental design"
+nature_of_research
+2d. Measurement Level
+
+# Levels of measurement for Measurement 1 and Measurement 2
+measurement_levels <- c("Measurement 1: Ratio", "Measurement 2: Ordinal")
+measurement_levels
+2e. Questionnaire
+
+# Evaluation of the wording of the question
+question_evaluation <- "The question is leading and suggests that sustainable lines are more environmentally conscious. It should be rephrased to be more neutral."
+question_evaluation
+3. R Basics
+Read Your Dataset into R
+
+# Read the dataset into R
+df <- read.csv("path_to_your_file.csv")
+3a. Explore the Data Structure
+
+question3a <- function() {
+  # Inspect the data structure
+  str(df)
+  
+  # Inspect the number of rows and columns
+  dim(df)
+  
+  # Print the Country, Q50, and Q48 information for the first and the last respondents
+  head(df[c("Country", "Q50", "Q48")], 1)
+  tail(df[c("Country", "Q50", "Q48")], 1)
+  
+  # Assuming Q99 is a column in the dataset
+  class_Q99 <- class(df$Q99)
+  class_Q99
+}
+question3a()
+3b. Membership to Environmental Organization - Q99
+
+question3b <- function() {
+  # Print the distribution of responses to question Q99
+  distribution_Q99 <- table(df$Q99)
+  print(distribution_Q99)
+  
+  # Number of inactive members
+  inactive_members <- distribution_Q99["Inactive member"]
+  inactive_members
+}
+question3b()
+3c. Membership to Environmental Organization and Country
+
+question3c <- function() {
+  # Create a new variable for membership
+  df$Membership <- ifelse(df$Q99 %in% c("Inactive member", "Active member"), "Member", "Non-member")
+  
+  # Print the contingency table between Membership and Country
+  contingency_table <- table(df$Membership, df$Country)
+  print(contingency_table)
+  
+  # Identify the country with the highest number of Member respondents
+  highest_members_country <- names(which.max(contingency_table["Member", ]))
+  highest_members_country
+}
+question3c()
+4. Data Manipulation
+4a. Missingness
+
+question4a <- function() {
+  # Calculate the percentage missingness
+  missingness <- round(colMeans(is.na(df[, c("Q99", "Q30", "Q31", "Q33")])) * 100, 2)
+  missingness
+}
+question4a()
+4b. Complete Observations
+
+question4b <- function() {
+  # Create the complete dataset
+  df.complete <<- na.omit(df)
+  dim(df.complete)
+  
+  # Create the partially complete dataset
+  df.complete.partial <<- df[complete.cases(df[c("Q30", "Q160", "Q286")]), ]
+  nrow(df.complete.partial)
+}
+question4b()
+4c. Membership to Environmental Organization (Q99) and Freedom of Choice (Q48)
+
+question4c <- function() {
+  # Mean perception for freedom of choice for each level of environmental organization membership in Country 1
+  mean_perception <- tapply(df.complete$Q48[df.complete$Country == "Country 1"], df.complete$Q99[df.complete$Country == "Country 1"], mean, na.rm = TRUE)
+  mean_perception
+}
+question4c()
+
+Week 2
+Week 2
+Week 2
+Week 2
+Read your dataset into R
+# Read the dataset into R
+df <- read.csv("path_to_your_file.csv")
+1. Reliability
+You have gathered data from WVS on:
+
+science & technology (scitech) perceptions: Q158, Q159, Q163
+emancipation: Q30, Q31, Q33
+well-being: Q48, Q49, Q50
+for the two countries of interest. These three are all multi-item scales and you want to understand if items within each scale are internally consistent. For this you will make a reliability analysis.
+
+1. Reliability Analysis
+# Install and load the psych package
+if (!require("psych")) install.packages("psych", dependencies = TRUE)
+library(psych)
+
+question1 <- function() {
+  # Subset data for each construct
+  scitech <- df[, c("Q158", "Q159", "Q163")]
+  emancipation <- df[, c("Q30", "Q31", "Q33")]
+  wellbeing <- df[, c("Q48", "Q49", "Q50")]
+  
+  # Calculate Cronbach's alpha for each construct
+  alpha_scitech <- alpha(scitech, use = "pairwise.complete.obs")
+  alpha_emancipation <- alpha(emancipation, use = "pairwise.complete.obs")
+  alpha_wellbeing <- alpha(wellbeing, use = "pairwise.complete.obs")
+  
+  # Print total alpha for each construct
+  print(alpha_scitech$total)
+  print(alpha_emancipation$total)
+  print(alpha_wellbeing$total)
+  
+  # Return results
+  list(
+    scitech = alpha_scitech$total$std.alpha,
+    emancipation = alpha_emancipation$total$std.alpha,
+    wellbeing = alpha_wellbeing$total$std.alpha
+  )
+}
+
+reliability_results <- question1()
+reliability_results
+2. Correlation Matrix and Validity
+2a. Correlation Analysis for Each Country
+
+question2a <- function() {
+  # Subset data for each country
+  country1 <- df[df$Country == "Country 1", ]
+  country2 <- df[df$Country == "Country 2", ]
+  
+  # Calculate correlation matrices for each country
+  corr_matrix_country1 <- cor(country1[, c("Q158", "Q159", "Q163", "Q30", "Q31", "Q33", "Q48", "Q49", "Q50")], use = "complete.obs")
+  corr_matrix_country2 <- cor(country2[, c("Q158", "Q159", "Q163", "Q30", "Q31", "Q33", "Q48", "Q49", "Q50")], use = "complete.obs")
+  
+  # Round and print correlation matrices
+  round(corr_matrix_country1, 3)
+  round(corr_matrix_country2, 3)
+}
+
+correlation_results <- question2a()
+correlation_results
+2b. Correlation Matrix Across Countries
+
+question2b <- function() {
+  # Calculate correlation matrix across countries
+  corr_matrix <- cor(df[, c("Q158", "Q159", "Q163", "Q30", "Q31", "Q33", "Q48", "Q49", "Q50")], use = "complete.obs")
+  
+  # Round and print the correlation matrix
+  round(corr_matrix, 3)
+}
+
+correlation_across_countries <- question2b()
+correlation_across_countries
+3. Factor Analysis
+To assess the extent to which the nine items measure the three constructs as intended, you decide to conduct a factor analysis.
+
+3. Factor Analysis
+
+question3 <- function() {
+  # Subset the complete data for the nine items
+  complete_data <- df[complete.cases(df[, c("Q158", "Q159", "Q163", "Q30", "Q31", "Q33", "Q48", "Q49", "Q50")]), ]
+  
+  # Conduct factor analysis
+  factor_analysis <- factanal(complete_data[, c("Q158", "Q159", "Q163", "Q30", "Q31", "Q33", "Q48", "Q49", "Q50")], factors = 3, rotation = "promax")
+  
+  # Print the output
+  print(factor_analysis)
+  
+  # Print the uniqueness of items
+  round(factor_analysis$uniquenesses, 2)
+}
+
+factor_analysis_results <- question3()
+factor_analysis_results
+4. Mean Scores
+4a. Calculate Mean Scores
+
+question4a <- function() {
+  # Calculate the mean scores for emancipation
+  df$emanci <- rowMeans(df[, c("Q30", "Q31", "Q33")], na.rm = TRUE)
+  
+  # Calculate the country means
+  mean_country1 <- mean(df$emanci[df$Country == "Country 1"], na.rm = TRUE)
+  mean_country2 <- mean(df$emanci[df$Country == "Country 2"], na.rm = TRUE)
+  
+  # Calculate the absolute mean difference
+  abs_mean_difference <- abs(mean_country1 - mean_country2)
+  
+  # Print the results
+  print(abs_mean_difference)
+  list(mean_country1 = mean_country1, mean_country2 = mean_country2, abs_mean_difference = abs_mean_difference)
+}
+
+mean_score_results <- question4a()
+mean_score_results
+4b. Visualize Mean Scores by Country
+
+question4b <- function() {
+  # Visualize the distribution of mean scores using boxplot
+  boxplot(emanci ~ Country, data = df, main = "Mean Scores of Emancipation by Country", ylab = "Mean Emancipation Scores", xlab = "Country")
+}
+
+question4b()
+5. Sampling
+Sampling Techniques
+Report in Excel Q5.1: When would you suggest simple random sampling? When you expect...
+
+
+simple_random_sampling <- "Simple random sampling is suggested when you expect a homogenous population and aim to ensure each individual has an equal chance of being selected."
+simple_random_sampling
+Report in Excel Q5.2: When would you suggest systematic sampling? When you expect...
+
+
+systematic_sampling <- "Systematic sampling is suggested when you expect a pattern in the population and aim to spread the sample evenly across the population."
+systematic_sampling
+Report in Excel Q5.3: What sampling technique is she suggesting?
+
+stratified_sampling <- "The researcher is suggesting stratified sampling, where the population is divided into strata (light, medium, heavy listeners) and samples are taken from each stratum considering the size of paid vs free subscribers."
+stratified_sampling
+Report in Excel Q5.4: What sampling technique are they suggesting?
+
+snowball_sampling <- "The researcher is suggesting snowball sampling, where initial subjects are selected and then asked to refer others to participate in the survey."
+snowball_sampling
+
+Week 3
+Week 3
+Week 3
+Week 3
+1. Chi-square ($X^2$) test
+1a. Descriptive 1
+Create a dummy variable for Millennials and visualize the distribution of social media usage frequencies.
+
+question1a <- function() {
+  # Create Millennial dummy variable
+  df$Millennial <- ifelse(df$Q262 >= 15 & df$Q262 <= 35, 1, ifelse(!is.na(df$Q262), 0, NA))
+  
+  # Visualize the distribution of social media usage frequencies
+  library(ggplot2)
+  ggplot(df, aes(x = factor(Millennial), fill = factor(Q207))) +
+    geom_bar(position = "stack") +
+    labs(x = "Millennial Dummy", y = "Count", fill = "Social Media Usage Frequency") +
+    ggtitle("Distribution of Social Media Usage Frequencies between Millennials and Non-Millennials")
+  
+  # DO NOT WRITE OR DELETE BELOW THIS POINT
+  df <<- df
+}
+question1a()
+1b. Descriptive 2
+Visualize the percentage distribution of social media usage frequencies.
+
+
+question1b <- function() {
+  # Calculate the percentage distribution within Millennials and Non-Millennials
+  prop_table <- prop.table(table(df$Millennial, df$Q207), margin = 1)
+  
+  # Visualize the percentage distribution
+  barplot(prop_table, beside = TRUE, legend = TRUE, args.legend = list(x = "topright"),
+          main = "Percentage Distribution of Social Media Usage Frequencies",
+          xlab = "Millennial Dummy", ylab = "Percentage")
+  
+  # DO NOT WRITE OR DELETE BELOW THIS POINT
+  df <<- df
+}
+question1b()
+1c. Test
+Analyze the dependency between social media usage frequency and the Millennial dummy using chi-square test.
+
+
+question1c <- function() {
+  # Perform chi-square test
+  chisq_test <- chisq.test(table(df$Millennial, df$Q207))
+  
+  # Print the output
+  print(chisq_test)
+  
+  # Save the test results into an object and inspect the expected and observed frequencies
+  expected_frequencies <- chisq_test$expected
+  observed_frequencies <- chisq_test$observed
+  
+  list(expected = expected_frequencies, observed = observed_frequencies)
+}
+question1c()
+2. Two-sample $t$-test
+2a. Welch t-test
+Perform a two-sided Welch $t$-test to compare life satisfaction between two groups.
+
+
+question2a <- function() {
+  # Drop respondents who responded '3' to Q111
+  df <- df[df$Q111 != 3, ]
+  
+  # Perform Welch t-test
+  t_test <- t.test(Q49 ~ Q111, data = df, var.equal = FALSE)
+  
+  # Print the output
+  print(t_test)
+  
+  # DO NOT WRITE OR DELETE BELOW THIS POINT
+  df <<- df
+}
+question2a()
+2b. Equal-variances t-test
+Apply t-test under the assumption of equal variances.
+
+
+question2b <- function() {
+  # Perform t-test with equal variances
+  t_test_equal_var <- t.test(Q49 ~ Q111, data = df, var.equal = TRUE)
+  
+  # Print the output
+  print(t_test_equal_var)
+}
+question2b()
+2c. Levene's test
+Use Levene's Test to check for equality of variances.
+
+
+question2c <- function() {
+  library(car)
+  
+  # Perform Levene's Test
+  levene_test <- leveneTest(Q49 ~ Q111, data = df)
+  
+  # Print the output
+  print(levene_test)
+}
+question2c()
+3. Paired $t$-test
+Perform a paired t-test on household financial satisfaction and life satisfaction for Country 1.
+
+
+question3 <- function() {
+  # Subset data for Country 1
+  df_country1 <- subset(df, Country == "Country 1")
+  
+  # Create a new variable representing the difference between financial satisfaction and life satisfaction
+  df_country1$diff <- df_country1$Q50 - df_country1$Q49
+  
+  # Perform a two-sided one-sample t-test
+  paired_t_test <- t.test(df_country1$Q50, df_country1$Q49, paired = TRUE, na.action = na.omit)
+  
+  # Print the output
+  print(paired_t_test)
+}
+question3()
+4. One-sided two-sample $t$-test
+4a. Descriptive
+Check the group-specific means of life satisfaction between non-environmentalists and environmentalists.
+
+
+question4a <- function() {
+  # Group-specific means using tapply
+  group_means <- tapply(df$Q49, list(df$Q111, df$Country), mean, na.rm = TRUE)
+  
+  # Print the output
+  print(group_means)
+}
+question4a()
+4b. Test
+Test the null hypothesis using a one-sided $t$-test.
+
+
+question4b <- function() {
+  # Perform one-sided t-test for non-environmentalists in country 2 vs country 1
+  non_env_test <- t.test(Q49 ~ Country, data = subset(df, Q111 == 2), alternative = "less")
+  
+  # Print the output
+  print(non_env_test)
+}
+question4b()
+5. ANOVA and TukeyHSD: Test mean differences
+5a. ANOVA
+Perform an ANOVA to test how the four groups differ in life satisfaction.
+
+
+question5a <- function() {
+  # Create a new variable for the four groups
+  df$group <- with(df, interaction(Q111, Country, sep = ""))
+  
+  # Perform ANOVA
+  anova_test <- aov(Q49 ~ group, data = df)
+  
+  # Print the output
+  summary(anova_test)
+  
+  # Get the means used in the ANOVA test
+  anova_means <- model.tables(anova_test, "means")
+  print(anova_means)
+  
+  # DO NOT WRITE OR DELETE BELOW THIS POINT
+  df <<- df
+}
+question5a()
+5b. TukeyHSD
+Conduct a TukeyHSD test to see which of the four groups differ in their life satisfaction.
+
+
+question5b <- function() {
+  # Perform TukeyHSD test
+  tukey_test <- TukeyHSD(aov(Q49 ~ group, data = df))
+  
+  # Print the output
+  print(tukey_test)
+}
+question5b()
+6. Correlation
+6a Correlation test
+Test the correlation between life satisfaction and freedom of choice in Country 2.
+
+
+question6a <- function() {
+  # Filter complete observations for correlation analysis
+  complete_data <- na.omit(df[, c("Q48", "Q49", "Q50")])
+  
+  # Perform correlation test
+  cor_test <- cor.test(complete_data$Q49, complete_data$Q48)
+  
+  # Print the output
+  print(cor_test)
+  
+  # Save the filtered data for the next question
+  complete_data <<- complete_data
+}
+question6a()
+6b Partial correlation test
+Perform a partial correlation test controlling for financial satisfaction.
+
+
+question6b <- function() {
+  library(ppcor)
+  
+  # Perform partial correlation test
+  partial_cor_test <- pcor.test(complete_data$Q49, complete_data$Q48, complete_data$Q50)
+  
+  # Print the output
+  print(partial_cor_test)
+}
+question6b()
+
+Week 4
+Week 4
+Week 4
+Week 4
+1. Understanding revenues with regression
+1a. Data cleaning and preparation
+
+question1a <- function() {
+  # Remove rows with negative Quantity
+  df <- df[df$Quantity > 0, ]
+  
+  # Print the number of remaining rows
+  print(nrow(df))
+  
+  # Create Revenue variable
+  df$Revenue <- df$UnitPrice * df$Quantity
+  
+  # Convert date column to Date type and create DayofWeek variable
+  df$date <- as.Date(df$date)
+  df$DayofWeek <- weekdays(df$date)
+  
+  # Create Weekend variable
+  df$Weekend <- df$DayofWeek %in% c("Saturday", "Sunday")
+  
+  # Calculate mean revenue by DayofWeek for Country 1
+  country1 <- df[df$Country == "Country1", ]
+  mean_revenue_by_day <- tapply(country1$Revenue, country1$DayofWeek, mean)
+  print(mean_revenue_by_day)
+  
+  df <<- df # DO NOT CODE BELOW THIS LINE AND DO NOT DELETE
+}
+question1a()
+1b. Simple regression
+
+question1b <- function() {
+  # Perform simple regression with DayofWeek explaining Revenue for Country 1
+  country1 <- df[df$Country == "Country1", ]
+  country1$DayofWeek <- factor(country1$DayofWeek, levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
+  model1b <- lm(Revenue ~ DayofWeek, data = country1)
+  
+  # Print the summary of the regression
+  print(summary(model1b))
+}
+question1b()
+1c. Multiple regression
+
+question1c <- function() {
+  # Perform multiple regression with DayofWeek and Country explaining Revenue
+  df$DayofWeek <- factor(df$DayofWeek, levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
+  model1c <- lm(Revenue ~ DayofWeek + Country, data = df)
+  
+  # Print the summary of the regression
+  print(summary(model1c))
+  
+  # Predict average revenue in Country 2 on a Saturday
+  coef_values <- coef(model1c)
+  avg_revenue_country2_saturday <- coef_values["(Intercept)"] + coef_values["DayofWeekSaturday"] + coef_values["CountryCountry2"]
+  print(round(avg_revenue_country2_saturday, 3))
+}
+question1c()
+2. Regressions on ratings and unit prices
+2a. Explaining ratings for single purchases
+
+question2a <- function() {
+  # Filter data for Quantity equal to 1
+  df_single_purchase <- df[df$Quantity == 1, ]
+  
+  # Perform multiple regression
+  model2a <- lm(Rating ~ UnitPrice + Revenue + Country, data = df_single_purchase)
+  
+  # Print the summary of the regression
+  print(summary(model2a))
+}
+question2a()
+2b. Explaining unit price: Visualization
+
+question2b <- function() {
+  library(ggplot2)
+  
+  # Filter data for UnitPrice less than 100
+  df_filtered <- df[df$UnitPrice < 100, ]
+  
+  # Create scatter plot for UnitPrice vs Rating by Country
+  ggplot(df_filtered, aes(x = Rating, y = UnitPrice, color = Country)) +
+    geom_point() +
+    labs(title = "Unit Price vs Rating by Country",
+         x = "Rating",
+         y = "Unit Price") +
+    theme_minimal()
+}
+question2b()
+2c. Explaining unit price: Regression 1
+
+question2c <- function() {
+  # Perform multiple regression with Rating and Country explaining UnitPrice
+  model2c <- lm(UnitPrice ~ Rating + Country, data = df)
+  
+  # Print the summary of the regression
+  print(summary(model2c))
+}
+question2c()
+2d. Explaining unit price: Regression 2
+
+question2d <- function() {
+  # Perform multiple regression with Rating, Quantity, and Country explaining UnitPrice
+  model2d <- lm(UnitPrice ~ Rating + Quantity + Country, data = df)
+  
+  # Print the summary of the regression
+  print(summary(model2d))
+}
+question2d()
+3. Explaining unit prices by a more comprehensive set of variables
+3a. Multiple regression
+
+question3a <- function() {
+  # Perform multiple regression with Rating, Quantity, Country, and Weekend explaining UnitPrice
+  model3a <- lm(UnitPrice ~ Rating + Quantity + Country + Weekend, data = df)
+  
+  # Print the summary of the regression
+  print(summary(model3a))
+  
+  # Save the model for later use
+  model3a <<- model3a
+}
+question3a()
+3b. Standardized regression
+
+question3b <- function() {
+  # Perform standardized regression
+  model3b <- lm(scale(UnitPrice) ~ scale(Rating) + scale(Quantity) + Country + Weekend, data = df)
+  
+  # Print the summary of the regression
+  print(summary(model3b))
+  
+  # Inspect the number of observations in the model
+  num_obs_in_model <- nrow(model3b$model)
+  num_obs_in_data <- nrow(df)
+  print(num_obs_in_model)
+  print(num_obs_in_data)
+}
+question3b()
+3c. Regression diagnostics
+
+question3c <- function() {
+  # Plot regression diagnostics for model 3a
+  par(mfrow = c(2, 2)) # this is to make sure to plot 4 graphs next and below to another
+  plot(model3a)
+}
+question3c()
+4. Log transformation
+4a and 4b. Histograms on original vs log scale
+
+question4a <- function() {
+  # Histogram on the original scale
+  ggplot(df, aes(x = UnitPrice)) +
+    geom_histogram(binwidth = 1) +
+    labs(title = "Histogram on the Original Scale",
+         x = "Unit Price",
+         y = "Frequency") +
+    theme_minimal()
+}
+question4a()
+
+question4b <- function() {
+  # Histogram on the log scale
+  ggplot(df, aes(x = log(UnitPrice + 0.01))) +
+    geom_histogram(binwidth = 0.1) +
+    labs(title = "Histogram on the Log Scale",
+         x = "Log(Unit Price + 0.01)",
+         y = "Frequency") +
+    theme_minimal()
+}
+question4b()
+4c. Log-transformed regression
+
+question4c <- function() {
+  # Perform log-transformed regression
+  model4c <- lm(log(UnitPrice + 0.01) ~ Rating + Quantity + Country + Weekend, data = df)
+  
+  # Print the summary of the regression
+  print(summary(model4c))
+  
+  # Save the model for later use
+  model4c <<- model4c
+}
+question4c()
+4d. Prediction
+
+question4d <- function() {
+  # Define the product P1 specifications
+  P1 <- data.frame(Rating = 8.3, Quantity = 5, Country = "Country1", Weekend = TRUE)
+  
+  # Predict UnitPrice using model3a
+  prediction_model3a <- predict(model3a, newdata = P1)
+  
+  # Predict UnitPrice using model4c
+  log_prediction_model4c <- predict(model4c, newdata = P1)
+  prediction_model4c <- exp(log_prediction_model4c) - 0.01
+  
+  # Print both predictions
+  print(prediction_model3a)
+  print(prediction_model4c)
+}
+question4d()
+
